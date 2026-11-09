@@ -1,0 +1,237 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* Contenedor Principal de la Ficha */
+.pokemon-detail-wrapper {
+    max-width: 850px;
+    margin: 30px auto 60px;
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.07);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+/* Header Banner PokéRed */
+.pokemon-header-banner {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+    padding: 35px 20px;
+    text-align: center;
+    color: white;
+    position: relative;
+}
+
+.pokemon-sprite-container {
+    width: 130px;
+    height: 130px;
+    background: white;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    border: 4px solid #ffffff;
+}
+
+.pokemon-sprite-container img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+}
+
+.pokemon-title-id {
+    font-size: 2em;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pokemon-title-id span {
+    opacity: 0.85;
+}
+
+/* Grilla de Información de 2 Columnas */
+.pokemon-info-body {
+    padding: 35px 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 26px;
+}
+
+.full-width-section {
+    grid-column: span 2;
+}
+
+.info-card-block {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 22px;
+    border: 1px solid #e2e8f0;
+}
+
+.info-card-block h3 {
+    font-size: 0.9em;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #64748b;
+    letter-spacing: 0.8px;
+    margin-bottom: 14px;
+}
+
+/* Datos Físicos (Altura y Peso) */
+.physique-grid {
+    display: flex;
+    gap: 16px;
+}
+
+.physique-item {
+    flex: 1;
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+}
+
+.physique-item .val {
+    font-size: 1.2em;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.physique-item .lbl {
+    font-size: 0.75em;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Habilidades */
+.abilities-wrapper {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.badge-pill {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 700;
+}
+
+.badge-ability {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+}
+
+.badge-ability.badge-hidden {
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #fde68a;
+}
+
+/* Barras de Estadísticas Base */
+.stat-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 12px;
+}
+
+.stat-label {
+    width: 140px;
+    font-size: 0.85em;
+    font-weight: 700;
+    color: #334155;
+}
+
+.stat-value {
+    width: 35px;
+    font-size: 0.85em;
+    font-weight: 800;
+    color: #0f172a;
+    text-align: right;
+}
+
+.stat-bar-container {
+    flex: 1;
+    height: 10px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.stat-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+    border-radius: 10px;
+}
+
+/* Cadena Evolutiva con Sprites */
+.evolution-chain-container {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 10px 0;
+}
+
+.evolution-step-card {
+    background: #ffffff;
+    padding: 14px 20px;
+    border-radius: 16px;
+    border: 2px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    min-width: 140px;
+}
+
+.evolution-step-card:hover {
+    border-color: #ef4444;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(239, 68, 68, 0.12);
+}
+
+.evolution-step-card.active-step {
+    background: #fef2f2;
+    border-color: #ef4444;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.08);
+}
+
+.step-title {
+    font-size: 0.72em;
+    color: #64748b;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.evo-thumb {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    margin: 4px 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.evolution-link {
+    color: #2563eb;
+    font-weight: 700;
+    font-size: 0.9em;
+}
+
+.evo-arrow {
+    font-size: 1.4em;
+    color: #94a3b8;
+    font-weight: bold;
+}

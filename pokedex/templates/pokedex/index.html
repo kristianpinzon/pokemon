@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokéDex Dashboard</title>
+    <link rel="stylesheet" href="{% static 'pokedex/css/styles.css' %}">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="pokeball-icon"></div>
+                <h1>PokéDex <span>Dashboard</span></h1>
+            </div>
+            
+            <nav class="nav-links">
+                <a href="?section=trainers" class="nav-btn {% if section == 'trainers' %}active{% endif %}">Entrenadores</a>
+                <a href="?section=pokemons" class="nav-btn {% if section == 'pokemons' %}active{% endif %}">Pokémon</a>
+                <a href="?section=gyms" class="nav-btn {% if section == 'gyms' %}active{% endif %}">Gimnasios</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="action-bar">
+            <form method="GET" class="search-form">
+                <input type="hidden" name="section" value="{{ section }}">
+                <div class="search-input-wrapper">
+                    <input type="text" name="q" value="{{ query }}" placeholder="Buscar por nombre, pueblo..." class="search-input">
+                    {% if query %}
+                        <a href="?section={{ section }}" class="clear-search-btn" title="Limpiar búsqueda">✕</a>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </form>
+
+            {% if section == 'trainers' %}
+                <a href="{% url 'trainer_create' %}" class="btn btn-create">+ Registrar Entrenador</a>
+            {% elif section == 'gyms' %}
+                <a href="{% url 'gym_create' %}" class="btn btn-create">+ Crear Gimnasio</a>
+            {% endif %}
+        </div>
+
+        <!-- 1. ENTRENADORES -->
+        {% if section == 'trainers' %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Documento</th>
+                            <th>Nombre</th>
+                            <th>Pueblo</th>
+                            <th>Profesor</th>
+                            <th>Equipo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in trainers %}
+                        <tr>
+                            <td><span class="doc-code">{{ t.document_id }}</span></td>
+                            <td>
+                                <a href="{% url 'trainer_detail' t.id %}" class="table-link">
+                                    {{ t.first_name }} {{ t.last_name }}
+                                </a>
+                            </td>
+                            <td>{{ t.hometown }}</td>
+                            <td>{{ t.assigned_professor }}</td>
+                            <td><span class="badge team-badge">{{ t.pokemon_count }}/6</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{% url 'trainer_edit' t.id %}" class="btn btn-warning">Editar</a>
+                                    <a href="{% url 'trainer_delete' t.id %}" class="btn btn-danger">Eliminar</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="empty-table-msg">
+                                No se encontraron entrenadores.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        <!-- 2. POKÉMON -->
+        {% elif section == 'pokemons' %}
+            <div class="grid">
+                {% for pokemon in pokemons %}
+                <a href="{% url 'pokemon_detail' pokemon.poke_id %}" class="card">
+                    <span class="poke-id-tag">#{{ pokemon.poke_id }}</span>
+                    {% if pokemon.sprite_url %}
+                        <img src="{{ pokemon.sprite_url }}" alt="{{ pokemon.name }}" loading="lazy">
+                    {% endif %}
+                    <div class="name">
+                        {% if pokemon.spanish_name %}{{ pokemon.spanish_name }}{% else %}{{ pokemon.name|capfirst }}{% endif %}
+                    </div>
+                    <span class="badge category-{{ pokemon.category }}">{{ pokemon.get_category_display }}</span>
+                </a>
+                {% empty %}
+                    <p class="empty-table-msg" style="grid-column: 1/-1;">No se encontraron Pokémon.</p>
+                {% endfor %}
+            </div>
+
+        <!-- 3. GIMNASIOS -->
+        {% elif section == 'gyms' %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Ciudad / Pueblo</th>
+                            <th>Líder</th>
+                            <th>Tipo</th>
+                            <th>Medalla</th>
+                            <th>Región</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for g in gyms %}
+                        <tr>
+                            <td><strong>{{ g.town }}</strong></td>
+                            <td>{{ g.leader_name }}</td>
+                            <td><span class="badge type-badge">{{ g.element_type.name|capfirst }}</span></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    {% if g.badge_image_url %}
+                                        <img src="{{ g.badge_image_url }}" alt="{{ g.badge_name }}" style="width: 26px; height: 26px; object-fit: contain;">
+                                    {% endif %}
+                                    <span>{{ g.badge_name }}</span>
+                                </div>
+                            </td>
+                            <td><span class="region-tag">{{ g.region.name }}</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{% url 'gym_edit' g.id %}" class="btn btn-warning">Editar</a>
+                                    <a href="{% url 'gym_delete' g.id %}" class="btn btn-danger">Eliminar</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="empty-table-msg">
+                                No se encontraron gimnasios.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+    </main>
+
+</body>
+</html>

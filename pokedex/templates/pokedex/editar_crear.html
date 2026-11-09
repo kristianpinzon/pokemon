@@ -1,0 +1,149 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - PokéDex</title>
+    <link rel="stylesheet" href="{% static 'pokedex/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'pokedex/css/estilos_formulario.css' %}">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="pokeball-icon"></div>
+                <h1>PokéDex <span>Dashboard</span></h1>
+            </div>
+            <nav class="nav-links">
+                <a href="{% url 'index' %}" class="nav-btn">Volver al Inicio</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="form-wrapper">
+            <h2 class="form-header-title">{{ title }}</h2>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" style="grid-column: span 2;">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="form-grid">
+                    {% for field in form %}
+                        {% if field.name == 'qualified_for_league' %}
+                            <!-- Casilla destacada tipo Switch/Toggle -->
+                            <div class="field-group checkbox-row">
+                                <label for="{{ field.id_for_label }}" class="toggle-label">
+                                    {{ field }}
+                                    <span>¿Clasificado a la Liga Actual?</span>
+                                </label>
+                            </div>
+
+                        {% elif field.name == 'team' %}
+                            <!-- Selección de Pokémon con Sprites y Buscador -->
+                            <div class="field-group full-width">
+                                <label>{{ field.label }}</label>
+                                
+                                <div class="pokemon-search-wrapper">
+                                    <input type="text" id="pokemonSearch" class="form-control pokemon-search-input" placeholder="🔍 Escribe para buscar Pokémon por nombre o número...">
+                                </div>
+
+                                <div class="checkbox-list-container">
+                                    <ul class="checkbox-list pokemon-checkboxes-list">
+                                        {% for pkmn in form.team.field.queryset %}
+                                            <li class="checkbox-card" data-search="#{{ pkmn.poke_id }} {{ pkmn.spanish_name|default:pkmn.name }}">
+                                                <label for="id_team_{{ forloop.counter0 }}">
+                                                    <input type="checkbox" name="team" value="{{ pkmn.id }}" id="id_team_{{ forloop.counter0 }}"
+                                                        {% if pkmn in form.team.value %}checked{% endif %}>
+                                                    
+                                                    {% if pkmn.sprite_url %}
+                                                        <img src="{{ pkmn.sprite_url }}" alt="{{ pkmn.name }}" class="pkmn-thumb">
+                                                    {% endif %}
+                                                    
+                                                    <span class="pkmn-label">
+                                                        <strong class="pkmn-id">#{{ pkmn.poke_id }}</strong> 
+                                                        <span class="pkmn-name">{% if pkmn.spanish_name %}{{ pkmn.spanish_name }}{% else %}{{ pkmn.name|capfirst }}{% endif %}</span>
+                                                    </span>
+                                                </label>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+
+                                {% if field.errors %}
+                                    <span class="field-error-msg">{{ field.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+
+                        {% elif field.name == 'leagues_participated' or field.name == 'badges' %}
+                            <!-- Tarjetas estilizadas para Ligas y Medallas -->
+                            <div class="field-group full-width">
+                                <label>{{ field.label }}</label>
+                                <div class="checkbox-list-container">
+                                    <ul class="checkbox-list">
+                                        {% for option in field %}
+                                            <li class="checkbox-card">
+                                                <label for="{{ option.id_for_label }}">
+                                                    {{ option.tag }}
+                                                    <span>{{ option.choice_label }}</span>
+                                                </label>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% if field.errors %}
+                                    <span class="field-error-msg">{{ field.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+
+                        {% else %}
+                            <div class="field-group">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <span class="field-error-msg">{{ field.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    <div class="button-row">
+                        <a href="{% url 'index' %}" class="btn btn-danger">Cancelar</a>
+                        <button type="submit" class="btn btn-create">Guardar Registro</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('pokemonSearch');
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    const filter = searchInput.value.toLowerCase().trim();
+                    const items = document.querySelectorAll('.pokemon-checkboxes-list .checkbox-card');
+
+                    items.forEach(function (item) {
+                        const searchData = item.getAttribute('data-search').toLowerCase();
+                        if (searchData.includes(filter)) {
+                            item.style.display = "block";
+                        } else {
+                            item.style.display = "none";
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

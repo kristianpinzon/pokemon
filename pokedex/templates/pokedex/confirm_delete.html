@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{% static 'pokedex/styles.css' %}">
+</head>
+<body>
+
+    <div class="form-container" style="text-align: center;">
+        <h2>¿Estás seguro de eliminar este registro?</h2>
+        <p><strong>{{ object }}</strong></p>
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+            <a href="{% url 'index' %}" class="btn btn-primary">Cancelar</a>
+        </form>
+    </div>
+
+</body>
+</html>

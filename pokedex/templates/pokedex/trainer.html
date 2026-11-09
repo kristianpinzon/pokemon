@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Entrenador: {{ trainer.first_name }} {{ trainer.last_name }}</title>
+    <link rel="stylesheet" href="{% static 'pokedex/styles.css' %}">
+</head>
+<body>
+
+    <div class="trainer-card">
+        <h2>Entrenador: {{ trainer.first_name }} {{ trainer.last_name }}</h2>
+        <p><strong>Documento:</strong> {{ trainer.document_id }}</p>
+        <p><strong>Pueblo de Origen:</strong> {{ trainer.hometown }}</p>
+        <p><strong>Profesor Asignado:</strong> {{ trainer.assigned_professor }}</p>
+        <p><strong>Ligas Participadas:</strong> {{ trainer.leagues_participated }}</p>
+        <p><strong>¿Clasificado a la Liga?:</strong> {% if trainer.qualified_for_league %} Sí {% else %} No {% endif %}</p>
+
+        <hr>
+
+        <h3>Equipo Activo ({{ trainer.pokemon_count }}/6)</h3>
+        <div class="grid">
+            {% for p in trainer.team.all %}
+                <div class="card">
+                    <img src="{{ p.sprite_url }}" alt="{{ p.name }}">
+                    <p><strong>{% if p.spanish_name %}{{ p.spanish_name }}{% else %}{{ p.name|capfirst }}{% endif %}</strong></p>
+                </div>
+            {% empty %}
+                <p>No tiene Pokémon en su equipo activo.</p>
+            {% endfor %}
+        </div>
+
+        <hr>
+
+        <h3>Medallas de Gimnasio ({{ trainer.badge_count }})</h3>
+        <ul>
+            {% for g in trainer.badges.all %}
+                <li>Medalla {{ g.badge_name }} - Gimnasio {{ g.town }} (Líder {{ g.leader_name }})</li>
+            {% empty %}
+                <li>No posee medallas aún.</li>
+            {% endfor %}
+        </ul>
+
+        {% if trainer.pc_storage %}
+            <hr>
+            <h3>Almacenamiento de PC</h3>
+            <p><strong>Cuidador:</strong> {{ trainer.pc_storage.caretaker_professor }}</p>
+            <p><strong>Región PC:</strong> {{ trainer.pc_storage.region }}</p>
+            <p><strong>Pokémon Almacenados:</strong> {{ trainer.pc_storage.pokemon_count }}</p>
+            <p><strong>Ítems:</strong> {{ trainer.pc_storage.items }}</p>
+        {% endif %}
+
+        <br>
+        <a href="{% url 'index' %}?section=trainers" class="btn btn-primary">Volver a Entrenadores</a>
+    </div>
+
+</body>
+</html>

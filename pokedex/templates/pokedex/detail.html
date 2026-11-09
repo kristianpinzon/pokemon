@@ -1,0 +1,179 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#{{ pokemon.poke_id }} {{ pokemon.spanish_name|default:pokemon.name }} - PokéDex</title>
+    <link rel="stylesheet" href="{% static 'pokedex/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'pokedex/css/detalle_pokemon.css' %}">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="pokeball-icon"></div>
+                <h1>PokéDex <span>Dashboard</span></h1>
+            </div>
+            <nav class="nav-links">
+                <a href="{% url 'index' %}?section=pokemons" class="nav-btn">← Volver a Pokémon</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="pokemon-detail-wrapper">
+            
+            <div class="pokemon-header-banner">
+                <div class="pokemon-sprite-container">
+                    <img src="{{ pokemon.sprite_url }}" alt="{{ pokemon.name }}">
+                </div>
+                <h2 class="pokemon-title-id">
+                    <span>#{{ pokemon.poke_id }}</span> 
+                    {% if pokemon.spanish_name %}{{ pokemon.spanish_name }}{% else %}{{ pokemon.name|capfirst }}{% endif %}
+                </h2>
+                <span class="badge category-{{ pokemon.category }}">
+                    Categoría: {{ pokemon.get_category_display }}
+                </span>
+            </div>
+
+            <div class="pokemon-info-body">
+
+                <!-- 1. Datos Físicos -->
+                <div class="info-card-block">
+                    <h3>📏 Datos Físicos</h3>
+                    <div class="physique-grid">
+                        <div class="physique-item">
+                            <div class="val">{{ pokemon.height|default:"0.7" }} m</div>
+                            <div class="lbl">Altura</div>
+                        </div>
+                        <div class="physique-item">
+                            <div class="val">{{ pokemon.weight|default:"6.9" }} kg</div>
+                            <div class="lbl">Peso</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Habilidades -->
+                <div class="info-card-block">
+                    <h3>✨ Habilidades</h3>
+                    <div class="abilities-wrapper">
+                        {% if pokemon.abilities.all %}
+                            {% for ability in pokemon.abilities.all %}
+                                <span class="badge-pill badge-ability {% if ability.is_hidden %}badge-hidden{% endif %}">
+                                    {{ ability.name|capfirst }}
+                                    {% if ability.is_hidden %} (Oculta){% endif %}
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="badge-pill badge-ability">Espesura</span>
+                            <span class="badge-pill badge-ability badge-hidden">Clorofila (Oculta)</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- 3. Estadísticas Base -->
+                <div class="info-card-block full-width-section">
+                    <h3>📊 Estadísticas Base</h3>
+                    
+                    <div class="stat-row">
+                        <span class="stat-label">PS (Vida)</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar-fill" style="width: calc({{ pokemon.hp|default:45 }} / 2.55 * 1%);"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon.hp|default:45 }}</span>
+                    </div>
+
+                    <div class="stat-row">
+                        <span class="stat-label">Ataque</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar-fill" style="width: calc({{ pokemon.attack|default:49 }} / 2.55 * 1%);"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon.attack|default:49 }}</span>
+                    </div>
+
+                    <div class="stat-row">
+                        <span class="stat-label">Defensa</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar-fill" style="width: calc({{ pokemon.defense|default:49 }} / 2.55 * 1%);"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon.defense|default:49 }}</span>
+                    </div>
+
+                    <div class="stat-row">
+                        <span class="stat-label">Ataque Especial</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar-fill" style="width: calc({{ pokemon.special_attack|default:65 }} / 2.55 * 1%);"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon.special_attack|default:65 }}</span>
+                    </div>
+
+                    <div class="stat-row">
+                        <span class="stat-label">Defensa Especial</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar-fill" style="width: calc({{ pokemon.special_defense|default:65 }} / 2.55 * 1%);"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon.special_defense|default:65 }}</span>
+                    </div>
+
+                    <div class="stat-row">
+                        <span class="stat-label">Velocidad</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar-fill" style="width: calc({{ pokemon.speed|default:45 }} / 2.55 * 1%);"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon.speed|default:45 }}</span>
+                    </div>
+                </div>
+
+                <!-- 4. Cadena Evolutiva -->
+                <div class="info-card-block full-width-section">
+                    <h3>🧬 Cadena Evolutiva</h3>
+                    <div class="evolution-chain-container">
+                        
+                        {% if pokemon.category != 'normal' %}
+                            <p style="color: #64748b; font-weight: 600; font-size: 0.9em; margin: 0; text-align: center;">
+                                Este Pokémon es de categoría <strong>{{ pokemon.get_category_display }}</strong> y no posee cadena evolutiva.
+                            </p>
+                        {% else %}
+                            {% if prev_pokemon %}
+                                <a href="{% url 'pokemon_detail' prev_pokemon.poke_id %}" class="evolution-step-card">
+                                    <span class="step-title">Preevolución</span>
+                                    <img src="{{ prev_pokemon.sprite_url }}" alt="{{ prev_pokemon.name }}" class="evo-thumb">
+                                    <span class="evolution-link">#{{ prev_pokemon.poke_id }} {% if prev_pokemon.spanish_name %}{{ prev_pokemon.spanish_name }}{% else %}{{ prev_pokemon.name|capfirst }}{% endif %}</span>
+                                </a>
+                                <span class="evo-arrow">➔</span>
+                            {% endif %}
+
+                            <div class="evolution-step-card active-step">
+                                <span class="step-title">Forma Actual</span>
+                                <img src="{{ pokemon.sprite_url }}" alt="{{ pokemon.name }}" class="evo-thumb">
+                                <strong>#{{ pokemon.poke_id }} {% if pokemon.spanish_name %}{{ pokemon.spanish_name }}{% else %}{{ pokemon.name|capfirst }}{% endif %}</strong>
+                            </div>
+
+                            {% if next_pokemon %}
+                                <span class="evo-arrow">➔</span>
+                                <a href="{% url 'pokemon_detail' next_pokemon.poke_id %}" class="evolution-step-card">
+                                    <span class="step-title">Siguiente Evolución</span>
+                                    <img src="{{ next_pokemon.sprite_url }}" alt="{{ next_pokemon.name }}" class="evo-thumb">
+                                    <span class="evolution-link">#{{ next_pokemon.poke_id }} {% if next_pokemon.spanish_name %}{{ next_pokemon.spanish_name }}{% else %}{{ next_pokemon.name|capfirst }}{% endif %}</span>
+                                </a>
+                            {% endif %}
+
+                            {% if not prev_pokemon and not next_pokemon %}
+                                <p style="color: #64748b; font-weight: 600; font-size: 0.9em; margin: 0; text-align: center;">
+                                    Este Pokémon no posee evoluciones o preevoluciones adicionales.
+                                </p>
+                            {% endif %}
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>
